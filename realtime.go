@@ -35,7 +35,7 @@ func (t Time) Add(d time.Duration) Time {
 }
 
 func (t Time) String() string {
-	return fmt.Sprintf("%s", t.ns)
+	return t.ns.String()
 }
 
 func Since(u Time) time.Duration {
@@ -95,7 +95,10 @@ func (t *Timer) Reset(d time.Duration) bool {
 func (t *Timer) startTimer(d time.Duration) {
 	t.stopped = false
 	t.id = startTimer(d, func() {
-		t.C <- Now()
+		select {
+		case t.C <- Now():
+		default:
+		}
 	})
 }
 
@@ -109,9 +112,10 @@ func NewTicker(d time.Duration) *Ticker {
 		C: c,
 	}
 	t.id = startTicker(d, func() {
-		go func() {
-			c <- Now()
-		}()
+		select {
+		case t.C <- Now():
+		default:
+		}
 	})
 	return t
 }
