@@ -30,7 +30,7 @@ func nanotime() uint64 {
 		// TODO: handle panic.
 		panic(err)
 	}
-	return uint64(ts.Sec*1e9 + ts.Nsec)
+	return uint64(ts.Sec)*1e9 + (ts.Nsec)
 }
 
 func startTimer(d time.Duration, handler timerHandler) int {
